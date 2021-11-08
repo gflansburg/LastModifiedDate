@@ -1,0 +1,43 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'{databaseOwner}[{objectQualifier}LastModifiedDate_GetTabLastModifiedDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+BEGIN
+	DROP PROCEDURE {databaseOwner}[{objectQualifier}Gafware_LastModifiedDate_GetTabLastModifiedDate]
+END
+GO
+
+CREATE PROCEDURE {databaseOwner}{objectQualifier}Gafware_LastModifiedDate_GetTabLastModifiedDate
+	@TabId int
+AS
+BEGIN
+	SELECT MAX(LastModifiedOnDate) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}Tabs Where TabId = @TabId
+	UNION
+	SELECT MAX(LastModifiedOnDate) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}TabModules Where TabId =  @TabId
+	UNION
+	SELECT MAX(LastModifiedOnDate) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}HtmlText Where ModuleId IN (Select ModuleId From {databaseOwner}{objectQualifier}TabModules WHERE TabId =  @TabId)
+	UNION
+	SELECT MAX(CreatedDate) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}Links Where ModuleId IN (Select ModuleId From {databaseOwner}{objectQualifier}TabModules WHERE TabId = @TabId)
+	UNION
+	SELECT MAX(IsNull(DateModified, CreatedDate)) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}FAQs Where ModuleId IN (Select ModuleId From {databaseOwner}{objectQualifier}TabModules WHERE TabId = @TabId)
+	UNION
+	SELECT MAX(IsNull(UpdatedOn, CreatedOn)) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}LiveHtml_Content Where ModuleId IN (Select ModuleId From {databaseOwner}{objectQualifier}TabModules WHERE TabId = @TabId)
+	UNION
+	SELECT MAX(IsNull(UpdatedOn, CreatedOn)) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}LiveTabs_Tab Where ModuleId IN (Select ModuleId From {databaseOwner}{objectQualifier}TabModules WHERE TabId = @TabId)
+	UNION
+	SELECT MAX(IsNull(UpdatedOn, CreatedOn)) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}LiveAccordion_Pane Where ModuleId IN (Select ModuleId From {databaseOwner}{objectQualifier}TabModules WHERE TabId = @TabId)
+	UNION
+	SELECT MAX(IsNull(DateUpdated, DateCreated)) AS LastModifiedOnDate From {databaseOwner}{objectQualifier}LiveContent_Element Where ModuleId IN (Select ModuleId From {databaseOwner}{objectQualifier}TabModules WHERE TabId = @TabId)
+END
+GO
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/

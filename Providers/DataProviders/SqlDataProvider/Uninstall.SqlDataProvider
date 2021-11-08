@@ -1,0 +1,19 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'{databaseOwner}[{objectQualifier}Gafware_LastModifiedDate_GetTabLastModifiedDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+BEGIN
+	DROP PROCEDURE {databaseOwner}[{objectQualifier}Gafware_LastModifiedDate_GetTabLastModifiedDate]
+END
+GO
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/
